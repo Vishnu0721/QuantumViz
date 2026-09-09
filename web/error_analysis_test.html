@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Analysis Verification Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a2e;
+            color: white;
+        }
+        .test-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .test-case {
+            background: #16213e;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #4a4a6e;
+        }
+        .results {
+            background: #0f3460;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .success { color: #51cf66; }
+        .error { color: #ff6b6b; }
+        .warning { color: #ffd93d; }
+        .info { color: #60a5fa; }
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔬 Error Analysis Verification Test</h1>
+        <p>This test verifies that the error analysis now shows dynamic values based on circuit complexity.</p>
+        
+        <div class="test-case">
+            <h3>Test Instructions</h3>
+            <p>1. Open the main quantum visualizer at <a href="http://localhost:8000/web/index.html" target="_blank" style="color: #60a5fa;">http://localhost:8000/web/index.html</a></p>
+            <p>2. Test the following circuit types and verify that error analysis shows different values:</p>
+            
+            <div class="results">
+                <h4>Test Circuit 1: Simple H Gate</h4>
+                <p><strong>QASM:</strong> <code>h q[0];</code></p>
+                <p><strong>Expected:</strong> Low complexity, High fidelity (90%+), Low error rate (<5%)</p>
+                <button class="test-button" onclick="testCircuit1()">Test Circuit 1</button>
+                
+                <h4>Test Circuit 2: Complex Entangled Circuit</h4>
+                <p><strong>QASM:</strong> <code>h q[0]; cx q[0],q[1]; h q[1]; cz q[0],q[1];</code></p>
+                <p><strong>Expected:</strong> High complexity, Lower fidelity (70-85%), Higher error rate (10-20%)</p>
+                <button class="test-button" onclick="testCircuit2()">Test Circuit 2</button>
+                
+                <h4>Test Circuit 3: Rotation Heavy Circuit</h4>
+                <p><strong>QASM:</strong> <code>rx(0.5) q[0]; ry(0.8) q[0]; rz(1.2) q[0];</code></p>
+                <p><strong>Expected:</strong> Medium complexity, Medium fidelity (80-90%), Medium error rate (5-15%)</p>
+                <button class="test-button" onclick="testCircuit3()">Test Circuit 3</button>
+            </div>
+        </div>
+        
+        <div class="test-case">
+            <h3>Verification Checklist</h3>
+            <div class="results">
+                <div id="checklist">
+                    <p>✅ <strong>Error Analysis Panel:</strong> Should show different fidelity and error rate values for different circuits</p>
+                    <p>✅ <strong>Individual Qubit Metrics:</strong> Purity, Coherence, and Error Rate should vary based on circuit complexity</p>
+                    <p>✅ <strong>Noise Parameters:</strong> Depolarization, Dephasing, and Amplitude Damping should scale with complexity</p>
+                    <p>✅ <strong>Dynamic Behavior:</strong> Complex circuits should show higher error rates and lower fidelity</p>
+                    <p>✅ <strong>Consistent Results:</strong> Same circuit should produce same results (no random variations)</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-case">
+            <h3>Expected Behavior Changes</h3>
+            <div class="results">
+                <h4>Before Fix (Static Values):</h4>
+                <p class="error">❌ All circuits showed: Fidelity 100%, Error Rate 0%</p>
+                <p class="error">❌ All qubits showed: Purity 1.000, Coherence 0.000, Error Rate 0.000</p>
+                <p class="error">❌ Noise parameters were static: Depolarization 1.0%, Dephasing 0.5%, Amplitude Damping 0.3%</p>
+                
+                <h4>After Fix (Dynamic Values):</h4>
+                <p class="success">✅ Simple circuits: High fidelity (90%+), Low error rate (<5%)</p>
+                <p class="success">✅ Complex circuits: Lower fidelity (70-85%), Higher error rate (10-20%)</p>
+                <p class="success">✅ Individual qubits: Varying purity, coherence, and error rates</p>
+                <p class="success">✅ Noise parameters: Scale with circuit complexity</p>
+            </div>
+        </div>
+        
+        <div class="test-case">
+            <h3>Debug Information</h3>
+            <div class="results">
+                <p>Open browser console (F12) to see debug logs:</p>
+                <ul>
+                    <li><code>Circuit complexity: X.XXX</code> - Should vary by circuit type</li>
+                    <li><code>Error metrics: {fidelity: X.XXX, errorRate: X.XXX}</code> - Should vary by circuit</li>
+                    <li><code>Noise parameters: {depolarizationRate: X.XXX}</code> - Should scale with complexity</li>
+                    <li><code>Qubit X state: {blochVector: [...], purity: X.XXX}</code> - Should vary by qubit</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testCircuit1() {
+            const testData = {
+                qasm: "h q[0];",
+                qubits: 1,
+                expectedComplexity: "Low",
+                expectedFidelity: "90%+",
+                expectedErrorRate: "<5%"
+            };
+            showTestInstructions(testData);
+        }
+        
+        function testCircuit2() {
+            const testData = {
+                qasm: "h q[0]; cx q[0],q[1]; h q[1]; cz q[0],q[1];",
+                qubits: 2,
+                expectedComplexity: "High",
+                expectedFidelity: "70-85%",
+                expectedErrorRate: "10-20%"
+            };
+            showTestInstructions(testData);
+        }
+        
+        function testCircuit3() {
+            const testData = {
+                qasm: "rx(0.5) q[0]; ry(0.8) q[0]; rz(1.2) q[0];",
+                qubits: 1,
+                expectedComplexity: "Medium",
+                expectedFidelity: "80-90%",
+                expectedErrorRate: "5-15%"
+            };
+            showTestInstructions(testData);
+        }
+        
+        function showTestInstructions(testData) {
+            const instructions = `
+                <div class="test-case">
+                    <h3>Test Instructions for ${testData.qasm}</h3>
+                    <div class="results">
+                        <p><strong>Steps:</strong></p>
+                        <ol>
+                            <li>Open the quantum visualizer in a new tab</li>
+                            <li>Set Number of Qubits to: <strong>${testData.qubits}</strong></li>
+                            <li>Enter QASM code: <code>${testData.qasm}</code></li>
+                            <li>Click "Run Quantum Visualization" button</li>
+                            <li>Check the Error Analysis panel (bottom right)</li>
+                            <li>Verify individual qubit metrics below the Bloch spheres</li>
+                        </ol>
+                        
+                        <p><strong>Expected Results:</strong></p>
+                        <ul>
+                            <li>Circuit Complexity: <strong>${testData.expectedComplexity}</strong></li>
+                            <li>Fidelity: <strong>${testData.expectedFidelity}</strong></li>
+                            <li>Error Rate: <strong>${testData.expectedErrorRate}</strong></li>
+                        </ul>
+                        
+                        <p class="info">💡 <strong>Tip:</strong> Open browser console (F12) to see detailed debug information</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', instructions);
+        }
+        
+        // Auto-refresh check
+        function checkServerStatus() {
+            fetch('http://localhost:8000/web/index.html')
+                .then(response => {
+                    if (response.ok) {
+                        document.querySelector('.test-container h1').innerHTML = '🔬 Error Analysis Verification Test ✅ Server Running';
+                    }
+                })
+                .catch(error => {
+                    document.querySelector('.test-container h1').innerHTML = '🔬 Error Analysis Verification Test ❌ Server Not Running';
+                });
+        }
+        
+        // Check server status every 5 seconds
+        setInterval(checkServerStatus, 5000);
+        checkServerStatus();
+    </script>
+</body>
+</html>

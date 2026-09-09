@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Visualizer Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #0f1222; color: #e6e9ff; }
+        .test-section { margin: 20px 0; padding: 20px; background: #161a2f; border-radius: 10px; }
+        button { background: #6c8cff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin: 5px; }
+        button:hover { background: #5a7cff; }
+        .success { color: #51cf66; }
+        .error { color: #ff6b6b; }
+        .info { color: #a6abc8; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Quantum Visualizer Test Page</h1>
+    
+    <div class="test-section">
+        <h2>🔍 JavaScript Tests</h2>
+        <button onclick="testJavaScript()">Test JavaScript</button>
+        <button onclick="testExamples()">Test Examples</button>
+        <button onclick="testPlotly()">Test Plotly</button>
+        <div id="jsResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🚀 Quick Test</h2>
+        <p class="info">Try this simple Bell state circuit:</p>
+        <pre style="background: #27305a; padding: 15px; border-radius: 5px; overflow-x: auto;">
+OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+h q[0];
+cx q[0],q[1];</pre>
+        <button onclick="testBellState()">Test Bell State</button>
+        <div id="bellResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Status</h2>
+        <div id="status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 Links</h2>
+        <p><a href="index.html" style="color: #6c8cff;">📱 Main Quantum Visualizer</a></p>
+        <p><a href="react-quantum.html" style="color: #6c8cff;">⚛️ React Quantum Visualizer</a></p>
+    </div>
+
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <script>
+        function testJavaScript() {
+            const results = document.getElementById('jsResults');
+            try {
+                // Test basic JavaScript functionality
+                const testArray = [1, 2, 3];
+                const testMap = testArray.map(x => x * 2);
+                const testFilter = testArray.filter(x => x > 1);
+                
+                results.innerHTML = `
+                    <div class="success">✅ JavaScript is working!</div>
+                    <div class="info">Array operations: ${testMap.join(', ')} | Filtered: ${testFilter.join(', ')}</div>
+                `;
+            } catch (error) {
+                results.innerHTML = `<div class="error">❌ JavaScript error: ${error.message}</div>`;
+            }
+        }
+        
+        function testExamples() {
+            const results = document.getElementById('jsResults');
+            try {
+                // Test if examples object exists
+                if (typeof examples !== 'undefined') {
+                    const exampleNames = Object.keys(examples);
+                    results.innerHTML = `
+                        <div class="success">✅ Examples loaded: ${exampleNames.length}</div>
+                        <div class="info">Available: ${exampleNames.join(', ')}</div>
+                    `;
+                } else {
+                    results.innerHTML = `<div class="error">❌ Examples not loaded</div>`;
+                }
+            } catch (error) {
+                results.innerHTML = `<div class="error">❌ Examples test error: ${error.message}</div>`;
+            }
+        }
+        
+        function testPlotly() {
+            const results = document.getElementById('jsResults');
+            try {
+                if (typeof Plotly !== 'undefined') {
+                    // Create a simple test plot
+                    const testDiv = document.createElement('div');
+                    testDiv.id = 'testPlot';
+                    testDiv.style.width = '300px';
+                    testDiv.style.height = '200px';
+                    results.appendChild(testDiv);
+                    
+                    const trace = {
+                        x: [1, 2, 3, 4],
+                        y: [10, 11, 12, 13],
+                        type: 'scatter'
+                    };
+                    
+                    Plotly.newPlot('testPlot', [trace], {title: 'Test Plot'});
+                    
+                    results.innerHTML += `<div class="success">✅ Plotly is working!</div>`;
+                } else {
+                    results.innerHTML = `<div class="error">❌ Plotly not loaded</div>`;
+                }
+            } catch (error) {
+                results.innerHTML = `<div class="error">❌ Plotly test error: ${error.message}</div>`;
+            }
+        }
+        
+        function testBellState() {
+            const results = document.getElementById('bellResults');
+            try {
+                // Test the Bell state circuit
+                const qasm = `OPENQASM 2.0;
+include "qelib1.inc";
+qreg q[2];
+h q[0];
+cx q[0],q[1];`;
+                
+                if (typeof parseQasm !== 'undefined') {
+                    const parsed = parseQasm(qasm);
+                    results.innerHTML = `
+                        <div class="success">✅ QASM parsing works!</div>
+                        <div class="info">Qubits: ${parsed.numQubits}, Gates: ${parsed.ops.length}</div>
+                    `;
+                } else {
+                    results.innerHTML = `<div class="error">❌ QASM parser not loaded</div>`;
+                }
+            } catch (error) {
+                results.innerHTML = `<div class="error">❌ Bell state test error: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-run tests on page load
+        window.addEventListener('load', () => {
+            document.getElementById('status').innerHTML = `
+                <div class="success">✅ Test page loaded successfully!</div>
+                <div class="info">Click the test buttons above to verify functionality</div>
+            `;
+        });
+    </script>
+</body>
+</html>

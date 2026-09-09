@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Analysis Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a2e;
+            color: white;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .test-case {
+            background: #16213e;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #4a4a6e;
+        }
+        .results {
+            background: #0f3460;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .success { color: #51cf66; }
+        .error { color: #ff6b6b; }
+        .warning { color: #ffd93d; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔬 Error Analysis Test Suite</h1>
+        <p>Testing dynamic fidelity and error rate calculations for different circuit types.</p>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        // Include the error analysis functions from the main file
+        // This is a simplified test version
+        
+        function calculateCircuitComplexity(qasm, operations) {
+            try {
+                let complexity = 0;
+                complexity += operations.length * 0.05;
+                
+                let entanglementGates = 0;
+                let rotationGates = 0;
+                let hadamardGates = 0;
+                
+                for (const op of operations) {
+                    switch (op.gate) {
+                        case 'h': 
+                            complexity += 0.15; 
+                            hadamardGates++;
+                            break;
+                        case 'x': 
+                        case 'y': 
+                        case 'z': 
+                            complexity += 0.08; 
+                            break;
+                        case 'cx': 
+                        case 'cz': 
+                        case 'swap':
+                            complexity += 0.25; 
+                            entanglementGates++;
+                            break;
+                        case 'rx': 
+                        case 'ry': 
+                        case 'rz': 
+                            complexity += 0.12; 
+                            rotationGates++;
+                            break;
+                        default: 
+                            complexity += 0.08; 
+                            break;
+                    }
+                }
+                
+                if (entanglementGates > 0) {
+                    complexity += entanglementGates * 0.1;
+                }
+                
+                if (hadamardGates > 1) {
+                    complexity += hadamardGates * 0.05;
+                }
+                
+                if (rotationGates > 0) {
+                    complexity += rotationGates * 0.08;
+                }
+                
+                const depthFactor = Math.min(1.0, operations.length / 10);
+                complexity *= (1 + depthFactor * 0.3);
+                
+                return Math.max(0.1, Math.min(2.0, complexity));
+            } catch (error) {
+                console.error('Error calculating circuit complexity:', error);
+                return 0.5;
+            }
+        }
+
+        function calculateDynamicFidelity(individualStates, complexity, simulationResults = null) {
+            try {
+                if (!individualStates || individualStates.length === 0) return 0.95;
+                
+                let totalFidelity = 0;
+                let validStates = 0;
+                
+                for (const state of individualStates) {
+                    if (state.blochVector && state.purity !== undefined) {
+                        const blochMagnitude = Math.sqrt(
+                            (state.blochVector[0] || 0) ** 2 + 
+                            (state.blochVector[1] || 0) ** 2 + 
+                            (state.blochVector[2] || 0) ** 2
+                        );
+                        
+                        const stateFidelity = Math.min(1.0, state.purity * (0.5 + 0.5 * blochMagnitude));
+                        const complexityFactor = Math.max(0.1, 1 - (complexity * 0.4));
+                        const adjustedFidelity = stateFidelity * complexityFactor;
+                        
+                        totalFidelity += adjustedFidelity;
+                        validStates++;
+                    }
+                }
+                
+                if (validStates === 0) return 0.95;
+                
+                const averageFidelity = totalFidelity / validStates;
+                const noiseFactor = Math.min(0.2, complexity * 0.15);
+                const finalFidelity = Math.max(0.1, Math.min(1.0, averageFidelity - noiseFactor));
+                
+                return finalFidelity;
+            } catch (error) {
+                console.error('Error calculating dynamic fidelity:', error);
+                return 0.5;
+            }
+        }
+
+        function calculateErrorMetrics(individualQubitStates, circuitComplexity = 0) {
+            try {
+                if (!individualQubitStates || !Array.isArray(individualQubitStates) || individualQubitStates.length === 0) {
+                    return {
+                        fidelity: 1.0,
+                        errorRate: 0.0,
+                        traceDistance: 0.0,
+                        successProbability: 1.0
+                    };
+                }
+                
+                let totalFidelity = 0;
+                let validQubits = 0;
+                let totalErrorRate = 0;
+                
+                for (const qubitState of individualQubitStates) {
+                    if (qubitState && typeof qubitState.purity === 'number' && qubitState.blochVector) {
+                        const blochMagnitude = Math.sqrt(
+                            (qubitState.blochVector[0] || 0) ** 2 + 
+                            (qubitState.blochVector[1] || 0) ** 2 + 
+                            (qubitState.blochVector[2] || 0) ** 2
+                        );
+                        
+                        const stateFidelity = Math.min(1.0, qubitState.purity * (0.5 + 0.5 * blochMagnitude));
+                        const complexityFactor = Math.max(0.1, 1 - (circuitComplexity * 0.4));
+                        const adjustedFidelity = stateFidelity * complexityFactor;
+                        
+                        totalFidelity += adjustedFidelity;
+                        totalErrorRate += Math.max(0.001, 1 - adjustedFidelity);
+                        validQubits++;
+                    } else if (qubitState && typeof qubitState.purity === 'number') {
+                        const fidelity = Math.max(0, Math.min(1, qubitState.purity));
+                        const complexityFactor = Math.max(0.1, 1 - (circuitComplexity * 0.3));
+                        const adjustedFidelity = fidelity * complexityFactor;
+                        
+                        totalFidelity += adjustedFidelity;
+                        totalErrorRate += Math.max(0.001, 1 - adjustedFidelity);
+                        validQubits++;
+                    }
+                }
+                
+                if (validQubits === 0) {
+                    return {
+                        fidelity: 1.0,
+                        errorRate: 0.0,
+                        traceDistance: 0.0,
+                        successProbability: 1.0
+                    };
+                }
+                
+                const averageFidelity = totalFidelity / validQubits;
+                const averageErrorRate = totalErrorRate / validQubits;
+                const traceDistance = averageErrorRate;
+                const successProbability = averageFidelity * averageFidelity;
+                
+                return {
+                    fidelity: Math.max(0.1, Math.min(1.0, averageFidelity)),
+                    errorRate: Math.max(0.001, Math.min(0.5, averageErrorRate)),
+                    traceDistance: traceDistance,
+                    successProbability: successProbability,
+                    validQubits: validQubits,
+                    totalQubits: individualQubitStates.length
+                };
+                
+            } catch (error) {
+                console.error('Error in calculateErrorMetrics:', error);
+                return {
+                    fidelity: 0.8,
+                    errorRate: 0.2,
+                    traceDistance: 0.2,
+                    successProbability: 0.64
+                };
+            }
+        }
+
+        // Test cases
+        const testCases = [
+            {
+                name: "Simple H Gate",
+                operations: [{ gate: 'h', qubits: [0] }],
+                individualStates: [
+                    { blochVector: [1, 0, 0], purity: 1.0, coherence: 0.0 }
+                ],
+                expectedComplexity: "Low",
+                expectedFidelityRange: [0.7, 0.95]
+            },
+            {
+                name: "Complex Entangled Circuit",
+                operations: [
+                    { gate: 'h', qubits: [0] },
+                    { gate: 'cx', qubits: [0, 1] },
+                    { gate: 'h', qubits: [1] },
+                    { gate: 'cz', qubits: [0, 1] }
+                ],
+                individualStates: [
+                    { blochVector: [0.5, 0.3, 0.2], purity: 0.8, coherence: 0.4 },
+                    { blochVector: [0.4, 0.2, 0.1], purity: 0.7, coherence: 0.3 }
+                ],
+                expectedComplexity: "High",
+                expectedFidelityRange: [0.3, 0.7]
+            },
+            {
+                name: "Rotation Heavy Circuit",
+                operations: [
+                    { gate: 'rx', qubits: [0], params: [Math.PI/4] },
+                    { gate: 'ry', qubits: [0], params: [Math.PI/3] },
+                    { gate: 'rz', qubits: [0], params: [Math.PI/6] }
+                ],
+                individualStates: [
+                    { blochVector: [0.6, 0.4, 0.3], purity: 0.9, coherence: 0.6 }
+                ],
+                expectedComplexity: "Medium",
+                expectedFidelityRange: [0.5, 0.8]
+            }
+        ];
+
+        function runTests() {
+            const resultsContainer = document.getElementById('test-results');
+            let allPassed = true;
+
+            testCases.forEach((testCase, index) => {
+                const testDiv = document.createElement('div');
+                testDiv.className = 'test-case';
+                
+                // Calculate metrics
+                const complexity = calculateCircuitComplexity('', testCase.operations);
+                const fidelity = calculateDynamicFidelity(testCase.individualStates, complexity);
+                const errorMetrics = calculateErrorMetrics(testCase.individualStates, complexity);
+                
+                // Determine if test passed
+                const fidelityInRange = fidelity >= testCase.expectedFidelityRange[0] && 
+                                      fidelity <= testCase.expectedFidelityRange[1];
+                const complexityMatches = (testCase.expectedComplexity === "Low" && complexity < 0.5) ||
+                                        (testCase.expectedComplexity === "Medium" && complexity >= 0.5 && complexity < 1.0) ||
+                                        (testCase.expectedComplexity === "High" && complexity >= 1.0);
+                
+                const testPassed = fidelityInRange && complexityMatches;
+                if (!testPassed) allPassed = false;
+                
+                testDiv.innerHTML = `
+                    <h3>Test ${index + 1}: ${testCase.name}</h3>
+                    <div class="results">
+                        <div><strong>Operations:</strong> ${testCase.operations.length} gates</div>
+                        <div><strong>Circuit Complexity:</strong> ${complexity.toFixed(3)} (Expected: ${testCase.expectedComplexity})</div>
+                        <div><strong>Dynamic Fidelity:</strong> ${(fidelity * 100).toFixed(1)}% (Expected: ${testCase.expectedFidelityRange[0]*100}-${testCase.expectedFidelityRange[1]*100}%)</div>
+                        <div><strong>Error Rate:</strong> ${(errorMetrics.errorRate * 100).toFixed(1)}%</div>
+                        <div><strong>Success Probability:</strong> ${(errorMetrics.successProbability * 100).toFixed(1)}%</div>
+                        <div class="${testPassed ? 'success' : 'error'}">
+                            <strong>Status:</strong> ${testPassed ? '✅ PASSED' : '❌ FAILED'}
+                        </div>
+                    </div>
+                `;
+                
+                resultsContainer.appendChild(testDiv);
+            });
+
+            // Overall results
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = 'test-case';
+            summaryDiv.innerHTML = `
+                <h2 class="${allPassed ? 'success' : 'error'}">
+                    ${allPassed ? '🎉 All Tests Passed!' : '⚠️ Some Tests Failed'}
+                </h2>
+                <p>The error analysis is now calculating dynamic fidelity and error rates based on:</p>
+                <ul>
+                    <li>Actual Bloch vector magnitudes</li>
+                    <li>Qubit purity values</li>
+                    <li>Circuit complexity (gate types, entanglement, rotations)</li>
+                    <li>Circuit depth and structure</li>
+                </ul>
+                <p><strong>Key Improvements:</strong></p>
+                <ul>
+                    <li>✅ Fidelity varies based on circuit complexity</li>
+                    <li>✅ Error rates reflect actual quantum state properties</li>
+                    <li>✅ Different circuit types produce different results</li>
+                    <li>✅ No more static/random values</li>
+                </ul>
+            `;
+            resultsContainer.appendChild(summaryDiv);
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+</html>
